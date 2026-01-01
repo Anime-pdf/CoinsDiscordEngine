@@ -7,7 +7,7 @@ class LanguageConfig {
     var somethingWentWrong: String = "Something went wrong, transaction cancelled"
 
     var transactionMessage: String = "`{from}` sent `{to}` {amount} coins"
-    var transactionMessageReason: String = "`{from}` sent `{to}` {amount} coins. Reason: {reason}"
+    var transactionMessagePurpose: String = "`{from}` sent `{to}` {amount} coins. Purpose: {reason}"
 
     companion object {
         fun createRussian(): LanguageConfig {
@@ -16,7 +16,7 @@ class LanguageConfig {
             config.somethingWentWrong = "Что-то пошло не так, транзакция отменена"
 
             config.transactionMessage = "`{from}` отправил `{to}` {amount} монет"
-            config.transactionMessageReason = "`{from}` отправил `{to}` {amount} монет. Причина: {reason}"
+            config.transactionMessagePurpose = "`{from}` отправил `{to}` {amount} монет. Назначение: {reason}"
 
             return config
         }

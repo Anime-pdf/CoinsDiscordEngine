@@ -30,14 +30,14 @@ class PayCommand(val plugin: CoinsDiscordEngine) {
                         Commands.argument("amount", DoubleArgumentType.doubleArg(1.0))
                             .executes { execute(it, null) }
                             .then(
-                                Commands.argument("reason", StringArgumentType.greedyString())
-                                    .executes { execute(it, it.getArgument("reason", String::class.java)) })
+                                Commands.argument("purpose", StringArgumentType.greedyString())
+                                    .executes { execute(it, it.getArgument("purpose", String::class.java)) })
                     )
             )
 
     }
 
-    private fun execute(ctx: CommandContext<CommandSourceStack>, reason: String?): Int {
+    private fun execute(ctx: CommandContext<CommandSourceStack>, purpose: String?): Int {
         val player = ctx.getArgument("player", String::class.java)
         val amount = ctx.getArgument("amount", Double::class.java)
 
@@ -57,17 +57,17 @@ class PayCommand(val plugin: CoinsDiscordEngine) {
             DiscordSRV.getPlugin().jda
                 .getTextChannelById(plugin.configContainer.generalConfig.channelId)
                 ?.sendMessage(
-                    if (reason == null)
+                    if (purpose == null)
                         plugin.configContainer.languageConfig.transactionMessage
                             .replace("{from}", ctx.source.sender.name)
                             .replace("{to}", player)
                             .replace("{amount}", currency.formatValue(amount))
                     else
-                        plugin.configContainer.languageConfig.transactionMessageReason
+                        plugin.configContainer.languageConfig.transactionMessagePurpose
                             .replace("{from}", ctx.source.sender.name)
                             .replace("{to}", player)
                             .replace("{amount}", currency.formatValue(amount))
-                            .replace("{reason}", reason)
+                            .replace("{purpose}", purpose)
                 )?.queue()
         }
 
