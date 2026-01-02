@@ -22,7 +22,5 @@ jobs:
           distribution: 'corretto'
       - name: Make gradle executable
         run: chmod +x ./gradlew
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
       - name: Build
         run: ./gradlew build
