@@ -41,7 +41,7 @@ dependencies {
 
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(kotlin("reflect"))
+//    implementation(kotlin("reflect"))
 }
 
 tasks {
@@ -62,9 +62,11 @@ tasks.build {
 tasks.shadowJar {
     archiveClassifier = ""
 
-    relocate("io.leangen.geantyref", "me.animepdf.dew.libs.geantyref")
-    relocate("net.kyori.option", "me.animepdf.dew.libs.option")
-    relocate("org.spongepowered.configurate", "me.animepdf.dew.libs.configurate")
+    minimize()
+
+    relocate("io.leangen.geantyref", "me.animepdf.cde.libs.geantyref")
+    relocate("net.kyori.option", "me.animepdf.cde.libs.option")
+    relocate("org.spongepowered.configurate", "me.animepdf.cde.libs.configurate")
 
     // Merge META-INF/services files where needed
     mergeServiceFiles()
