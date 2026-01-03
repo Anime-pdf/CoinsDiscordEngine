@@ -35,8 +35,8 @@ To run this plugin, ensure you have the following components:
 | :--- |:-----------------------------|
 | **Java** | Version **21** or higher     |
 | **Server Core** | Paper, Purpur, Folia (1.21+) |
-| **CoinsEngine** | Version 2.5.3                |
-| **DiscordSRV** | Version 1.28.0+              |
+| **CoinsEngine** | Version 2.6.0                |
+| **DiscordSRV** | Version 1.30.3+              |
 
 ---
 
@@ -55,11 +55,11 @@ The plugin uses its own command system that wraps CoinsEngine functionality to t
 
 > ℹ️ **Note:** The main command is `/cde` (or your custom prefix defined in the config).
 
-| Command | Aliases (Configurable) | Description | Permission Required |
-| :--- | :--- | :--- | :--- |
-| `/cde pay <player> <amount> [reason]` | `pay`, `send` | Transfer currency to a player | Standard CoinsEngine perms |
-| `/cde add <player> <amount> [reason]` | `add`, `deposit` | Give currency to a player | `coinsengine.command.give` |
-| `/cde remove <player> <amount> [reason]` | `remove`, `withdraw` | Take currency from a player | `coinsengine.command.take` |
+| Command | Aliases (Configurable) | Description | Permission Required          |
+| :--- | :--- | :--- |:-----------------------------|
+| `/cde pay <player> <amount> [reason]` | `pay`, `send` | Transfer currency to a player | None                         |
+| `/cde add <player> <amount> [reason]` | `add`, `deposit` | Give currency to a player | `coinsengine.command.give`   |
+| `/cde remove <player> <amount> [reason]` | `remove`, `withdraw` | Take currency from a player | `coinsengine.command.take`   |
 | `/cde reload` | `reload` | Reload configuration | `coinsengine.command.reload` |
 
 ---
@@ -79,7 +79,7 @@ prefix: "mycustomprefix"
 # Whether to enable prefixed commands (e.g. /mycustomprefix pay)
 prefixedCommands: false
 
-# Whether to enable non-prefixed commands (e.g. /cde pay, but registered at root)
+# Whether to enable non-prefixed commands (e.g. /pay, /add, etc.)
 nonPrefixedCommands: true
 
 # Currency ID from CoinsEngine (default is 'coins')
@@ -98,6 +98,10 @@ addAliases:
 removeAliases:
   - "remove"
   - "withdraw"
+
+# Since CoinsEngine 2.6.0 I need to log operations myself, so these are options
+log-pay-to-file: true # 'operations.log' near config file
+log-pay-to-console: false
 
 # Toggle notifications for specific actions
 paymentNotification: true   # Player-to-player payments
