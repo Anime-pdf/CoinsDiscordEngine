@@ -5,8 +5,9 @@ import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
-import su.nightexpress.coinsengine.config.Lang
+import su.nightexpress.coinsengine.api.CoinsEngineAPI
 import su.nightexpress.coinsengine.config.Perms
+import su.nightexpress.nightcore.core.config.CoreLang
 
 class ReloadCommand(val plugin: CoinsDiscordEngine) {
     fun createCommand(): LiteralArgumentBuilder<CommandSourceStack> {
@@ -17,7 +18,7 @@ class ReloadCommand(val plugin: CoinsDiscordEngine) {
 
     private fun execute(ctx: CommandContext<CommandSourceStack>): Int {
         plugin.configContainer.reloadConfigs()
-        Lang.COMMAND_RELOAD_DONE.message.send(ctx.source.sender)
-        return 1;
+        CoreLang.PLUGIN_RELOADED.withPrefix(CoinsEngineAPI.plugin()).send(ctx.source.sender)
+        return 1
     }
 }

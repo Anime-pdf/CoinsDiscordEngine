@@ -15,6 +15,9 @@ class GeneralConfig {
     var addAliases: List<String> = listOf("add", "deposit")
     var removeAliases: List<String> = listOf("remove", "withdraw")
 
+    var logPayToFile = true
+    var logPayToConsole = false
+
     var paymentNotification: Boolean = true
     var addingNotification: Boolean = true
     var removingNotification: Boolean = true

@@ -9,12 +9,14 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import su.nightexpress.coinsengine.api.CoinsEngineAPI
 import su.nightexpress.coinsengine.api.currency.Currency
-import su.nightexpress.coinsengine.config.Lang
 import su.nightexpress.coinsengine.config.Perms
-import su.nightexpress.coinsengine.currency.CurrencyOperations
+import su.nightexpress.coinsengine.currency.operation.NotificationTarget
+import su.nightexpress.coinsengine.currency.operation.OperationContext
+import su.nightexpress.coinsengine.currency.operation.OperationResult
+import su.nightexpress.coinsengine.data.impl.CoinsUser
+import su.nightexpress.nightcore.core.config.CoreLang
 
 class AddCommand(val plugin: CoinsDiscordEngine) {
     fun createCommand(): List<LiteralArgumentBuilder<CommandSourceStack>> {
@@ -52,38 +54,41 @@ class AddCommand(val plugin: CoinsDiscordEngine) {
         val amount = ctx.getArgument("amount", Double::class.java)
 
         val currency: Currency? = CoinsEngineAPI.getCurrency(plugin.configContainer.generalConfig.currency)
-        if (currency == null || from !is Player) {
+        if (currency == null) {
             from.sendPlainMessage(plugin.configContainer.languageConfig.somethingWentWrong)
             return 0
         }
 
-        val user = CoinsEngineAPI.getUserManager().getOrFetch(player)
-        if (user == null) {
-            Lang.ECONOMY_ERROR_INVALID_PLAYER.asComponent().send(from)
-            return 0
+        CoinsEngineAPI.getUserManager().manageUser(player) { user: CoinsUser? ->
+            if (user == null) {
+                CoreLang.ERROR_INVALID_PLAYER.withPrefix(CoinsEngineAPI.plugin()).send(from);
+                return@manageUser
+            }
+            val operationContext: OperationContext = OperationContext.of(from)
+                .silentFor(NotificationTarget.CONSOLE_LOGGER)
+                .silentFor(NotificationTarget.USER, false)
+                .silentFor(NotificationTarget.EXECUTOR, false)
+            val result = CoinsEngineAPI.plugin().currencyManager.give(operationContext, user, currency, amount)
+
+            if (result == OperationResult.SUCCESS && plugin.configContainer.generalConfig.addingNotification) {
+                DiscordSRV.getPlugin().jda
+                    .getTextChannelById(plugin.configContainer.generalConfig.channelId)
+                    ?.sendMessage(
+                        if (reason == null)
+                            plugin.configContainer.languageConfig.addMessage
+                                .replace("{target}", player)
+                                .replace("{source}", from.name)
+                                .replace("{amount}", currency.formatValue(amount))
+                        else
+                            plugin.configContainer.languageConfig.addMessageReason
+                                .replace("{target}", player)
+                                .replace("{source}", from.name)
+                                .replace("{amount}", currency.formatValue(amount))
+                                .replace("{reason}", reason)
+                    )?.queue()
+            }
         }
 
-        val operation = CurrencyOperations.forAdd(currency, amount, user, from)
-        val success = CoinsEngineAPI.plugin().currencyManager.performOperation(operation)
-
-        if (success && plugin.configContainer.generalConfig.addingNotification) {
-            DiscordSRV.getPlugin().jda
-                .getTextChannelById(plugin.configContainer.generalConfig.channelId)
-                ?.sendMessage(
-                    if (reason == null)
-                        plugin.configContainer.languageConfig.addMessage
-                            .replace("{target}", player)
-                            .replace("{source}", from.name)
-                            .replace("{amount}", currency.formatValue(amount))
-                    else
-                        plugin.configContainer.languageConfig.addMessageReason
-                            .replace("{target}", player)
-                            .replace("{source}", from.name)
-                            .replace("{amount}", currency.formatValue(amount))
-                            .replace("{reason}", reason)
-                )?.queue()
-        }
-
-        return 1;
+        return 1
     }
 }
