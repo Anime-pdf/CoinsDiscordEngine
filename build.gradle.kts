@@ -24,14 +24,15 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
 
     // DiscordSRV + JDA
-    compileOnly("com.discordsrv:discordsrv:1.28.0")
-    compileOnly("net.dv8tion:JDA:6.0.0") {
+    compileOnly("com.discordsrv:discordsrv:1.30.3")
+    compileOnly("net.dv8tion:JDA:6.2.1") {
         exclude(module = "opus-java")
         exclude(module = "tink")
     }
 
     // CoinsEngine
-    compileOnly("su.nightexpress.coinsengine:CoinsEngine:2.5.3")
+    compileOnly("su.nightexpress.coinsengine:CoinsEngine:2.6.0")
+    compileOnly("su.nightexpress.nightcore:main:2.9.4")
 
     // SpongePowered Configurate
     implementation("org.spongepowered:configurate-core:4.2.0")
