@@ -6,11 +6,11 @@ import org.spongepowered.configurate.objectmapping.meta.Comment
 @ConfigSerializable
 class LanguageConfig {
     @ConfigSerializable
-    enum class CurrencyForm {
-        ONE,
-        FEW,
-        MANY
-    }
+    data class CurrencyForms(
+        val one: String = "",
+        val few: String = "",
+        val many: String = ""
+    )
 
     var somethingWentWrong: String = "Something went wrong, transaction cancelled"
 
@@ -30,10 +30,10 @@ class LanguageConfig {
     var removeMessageReason: String = "`{amount} {currency} were withdrawn from `{target}`'s account. Reason: {reason}"
 
     @Comment("ONE: 1\nFEW: 2-4\nMANY: 11-14 and everything else")
-    var currencyForms: Map<CurrencyForm, String> = hashMapOf(
-        CurrencyForm.ONE to "coin",
-        CurrencyForm.FEW to "coins",
-        CurrencyForm.MANY to "coins"
+    var currencyForms = CurrencyForms(
+        one = "coin",
+        few = "coins",
+        many = "coins"
     )
 
     companion object {
@@ -51,10 +51,10 @@ class LanguageConfig {
             config.removeMessage = "Со счёта `{target}` снято {amount} {currency}"
             config.removeMessageReason = "Со счёта `{target}` снято {amount} {currency}. Причина: {reason}"
 
-            config.currencyForms = hashMapOf(
-                CurrencyForm.ONE to "монета",
-                CurrencyForm.FEW to "монеты",
-                CurrencyForm.MANY to "монет"
+            config.currencyForms = CurrencyForms(
+                one = "монету",
+                few = "монеты",
+                many = "монет"
             )
 
             return config
