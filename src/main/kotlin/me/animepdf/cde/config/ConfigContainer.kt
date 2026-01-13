@@ -4,8 +4,7 @@ import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.objectmapping.ObjectMapper
 import org.spongepowered.configurate.serialize.TypeSerializerCollection
-import org.spongepowered.configurate.yaml.NodeStyle
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
 import java.nio.file.Files
 import java.util.function.Consumer
@@ -29,7 +28,8 @@ class ConfigContainer(val dataFolder: File) {
         val configFile = File(dataFolder, fileName);
         val configPath = configFile.toPath()
 
-        val loader = YamlConfigurationLoader.builder()
+        val loader =
+            HoconConfigurationLoader.builder()
             .path(configPath)
             .defaultOptions { opts: ConfigurationOptions ->
                 opts.serializers({ serializersInner ->
@@ -38,7 +38,6 @@ class ConfigContainer(val dataFolder: File) {
                     )
                 })
             }
-            .nodeStyle(NodeStyle.BLOCK)
             .indent(2)
             .build()
 
@@ -86,7 +85,8 @@ class ConfigContainer(val dataFolder: File) {
         val configFile = File(dataFolder, fileName)
         val configPath = configFile.toPath()
 
-        val loader = YamlConfigurationLoader.builder()
+        val loader =
+            HoconConfigurationLoader.builder()
             .path(configPath)
             .defaultOptions(UnaryOperator { opts: ConfigurationOptions? ->
                 opts!!.serializers(Consumer { serializersInner: TypeSerializerCollection.Builder? ->
@@ -95,7 +95,6 @@ class ConfigContainer(val dataFolder: File) {
                     )
                 })
             })
-            .nodeStyle(NodeStyle.BLOCK)
             .indent(2)
             .build()
 

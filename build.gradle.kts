@@ -36,9 +36,7 @@ dependencies {
 
     // SpongePowered Configurate
     implementation("org.spongepowered:configurate-core:4.2.0")
-    implementation("org.spongepowered:configurate-yaml:4.2.0") {
-        exclude(group = "org.yaml", module = "snakeyaml")
-    }
+    implementation("org.spongepowered:configurate-hocon:4.2.0")
 
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
