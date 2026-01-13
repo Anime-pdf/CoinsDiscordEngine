@@ -79,9 +79,9 @@ class PayCommand(val plugin: CoinsDiscordEngine) {
         val player = ctx.getArgument("player", String::class.java)
         val amount = ctx.getArgument("amount", Double::class.java)
 
-        val currency: Currency? = CoinsEngineAPI.getCurrency(plugin.configContainer.generalConfig.currency)
+        val currency: Currency? = CoinsEngineAPI.getCurrency(plugin.conf().currencyId)
         if (currency == null || from !is Player) {
-            from.sendPlainMessage(plugin.configContainer.languageConfig.somethingWentWrong)
+            from.sendPlainMessage(plugin.lang().somethingWentWrong)
             return 0
         }
 

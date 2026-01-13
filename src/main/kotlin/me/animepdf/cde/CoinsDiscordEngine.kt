@@ -28,14 +28,14 @@ class CoinsDiscordEngine : JavaPlugin() {
                 root.then(alias)
                 prefix.then(alias)
 
-                if (configContainer.generalConfig.nonPrefixedCommands) {
+                if (conf().nonPrefixedCommands) {
                     it.registrar().register(alias.build())
                 }
             }
 
             it.registrar().register(root.build())
 
-            if (configContainer.generalConfig.prefixedCommands) {
+            if (conf().prefixedCommands) {
                 it.registrar().register(prefix.build())
             }
         }
@@ -55,6 +55,11 @@ class CoinsDiscordEngine : JavaPlugin() {
         registerCommands()
     }
 
-    override fun onDisable() {
+    fun conf(): GeneralConfig {
+        return configContainer.generalConfig;
+    }
+
+    fun lang(): LanguageConfig {
+        return configContainer.languageConfig;
     }
 }

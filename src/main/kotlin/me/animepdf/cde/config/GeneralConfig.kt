@@ -8,17 +8,31 @@ class GeneralConfig {
     var prefixedCommands: Boolean = false
     var nonPrefixedCommands: Boolean = true
 
-    var currency: String = "coins";
+    var currencyId: String = "coins";
     var channelId: Long = 0;
 
-    var payAliases: List<String> = listOf("pay", "send")
-    var addAliases: List<String> = listOf("add", "deposit")
-    var removeAliases: List<String> = listOf("remove", "withdraw")
+    @ConfigSerializable
+    class Alias {
+        var pay: List<String> = listOf("pay", "send")
+        var add: List<String> = listOf("add", "deposit")
+        var remove: List<String> = listOf("remove", "withdraw")
+    }
+    var alias = Alias()
 
-    var logPayToFile = true
-    var logPayToConsole = false
+    @ConfigSerializable
+    class Log {
+        var logPayToFile = true
+        var logPayToConsole = false
+    }
+    var log = Log()
 
-    var paymentNotification: Boolean = true
-    var addingNotification: Boolean = true
-    var removingNotification: Boolean = true
+    @ConfigSerializable
+    class Notification {
+        var pay: Boolean = true
+        var add: Boolean = true
+        var remove: Boolean = true
+    }
+    var notification = Notification()
+
+
 }
