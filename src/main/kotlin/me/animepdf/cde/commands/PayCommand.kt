@@ -1,15 +1,12 @@
 package me.animepdf.cde.commands
 
-import com.mojang.brigadier.arguments.DoubleArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import github.scarsz.discordsrv.DiscordSRV
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
-import org.bukkit.Bukkit
 import me.animepdf.cde.utils.CommandUtils
+import me.animepdf.cde.utils.CurrencyUtils
+import me.animepdf.cde.utils.DiscordLogger
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import su.nightexpress.coinsengine.COEFiles
@@ -28,7 +25,10 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.function.Consumer
 
-class PayCommand(val plugin: CoinsDiscordEngine) {
+class PayCommand(
+    private val plugin: CoinsDiscordEngine,
+    private val discordLogger: DiscordLogger
+) {
     lateinit var currencyLogger: CurrencyLogger
 
     fun createCommand(): List<LiteralArgumentBuilder<CommandSourceStack>> {
@@ -139,23 +139,19 @@ class PayCommand(val plugin: CoinsDiscordEngine) {
             )
             currencyLogger.write();
 
-            if (plugin.configContainer.generalConfig.paymentNotification) {
-                val channel =
-                    DiscordSRV.getPlugin().jda.getTextChannelById(plugin.configContainer.generalConfig.channelId)
-                val message = channel?.sendMessage(
-                    if (purpose == null)
-                        plugin.configContainer.languageConfig.transactionMessage
-                            .replace("{from}", from.name)
-                            .replace("{to}", player)
-                            .replace("{amount}", currency.formatValue(amount))
-                    else
-                        plugin.configContainer.languageConfig.transactionMessagePurpose
-                            .replace("{from}", from.name)
-                            .replace("{to}", player)
-                            .replace("{amount}", currency.formatValue(amount))
-                            .replace("{purpose}", purpose)
+            if (plugin.conf().notification.pay) {
+                val config = plugin.lang()
+                val messageTemplate = if (purpose == null) config.transactionMessage else config.transactionMessagePurpose
+
+                val placeholders = mapOf(
+                    "from" to from.name,
+                    "to" to player,
+                    "amount" to currency.formatValue(amount),
+                    "currency" to CurrencyUtils.formatCurrency(config.currencyForms, amount),
+                    "purpose" to (purpose ?: "")
                 )
-                message?.queue()
+
+                discordLogger.sendLog(messageTemplate, placeholders)
             }
         }
 

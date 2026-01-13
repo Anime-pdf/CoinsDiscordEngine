@@ -1,15 +1,12 @@
 package me.animepdf.cde.commands
 
-import com.mojang.brigadier.arguments.DoubleArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import github.scarsz.discordsrv.DiscordSRV
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
-import org.bukkit.Bukkit
 import me.animepdf.cde.utils.CommandUtils
+import me.animepdf.cde.utils.CurrencyUtils
+import me.animepdf.cde.utils.DiscordLogger
 import su.nightexpress.coinsengine.api.CoinsEngineAPI
 import su.nightexpress.coinsengine.api.currency.Currency
 import su.nightexpress.coinsengine.config.Perms
@@ -19,7 +16,10 @@ import su.nightexpress.coinsengine.currency.operation.OperationResult
 import su.nightexpress.coinsengine.data.impl.CoinsUser
 import su.nightexpress.nightcore.core.config.CoreLang
 
-class RemoveCommand(val plugin: CoinsDiscordEngine) {
+class RemoveCommand(
+    private val plugin: CoinsDiscordEngine,
+    private val discordLogger: DiscordLogger
+) {
     fun createCommand(): List<LiteralArgumentBuilder<CommandSourceStack>> {
         return CommandUtils.buildEconomyCommand(
             aliases = plugin.conf().alias.remove,
@@ -50,22 +50,19 @@ class RemoveCommand(val plugin: CoinsDiscordEngine) {
                 .silentFor(NotificationTarget.EXECUTOR, false)
             val result = CoinsEngineAPI.plugin().currencyManager.remove(operationContext, user, currency, amount)
 
-            if (result == OperationResult.SUCCESS && plugin.configContainer.generalConfig.removingNotification) {
-                DiscordSRV.getPlugin().jda
-                    .getTextChannelById(plugin.configContainer.generalConfig.channelId)
-                    ?.sendMessage(
-                        if (reason == null)
-                            plugin.configContainer.languageConfig.removeMessage
-                                .replace("{target}", player)
-                                .replace("{source}", from.name)
-                                .replace("{amount}", currency.formatValue(amount))
-                        else
-                            plugin.configContainer.languageConfig.removeMessageReason
-                                .replace("{target}", player)
-                                .replace("{source}", from.name)
-                                .replace("{amount}", currency.formatValue(amount))
-                                .replace("{reason}", reason)
-                    )?.queue()
+            if (result == OperationResult.SUCCESS && plugin.conf().notification.remove) {
+                val config = plugin.lang()
+                val messageTemplate = if (reason == null) config.removeMessage else config.removeMessageReason
+
+                val placeholders = mapOf(
+                    "source" to from.name,
+                    "target" to player,
+                    "amount" to currency.formatValue(amount),
+                    "currency" to CurrencyUtils.formatCurrency(config.currencyForms, amount),
+                    "reason" to (reason ?: "")
+                )
+
+                discordLogger.sendLog(messageTemplate, placeholders)
             }
         }
 

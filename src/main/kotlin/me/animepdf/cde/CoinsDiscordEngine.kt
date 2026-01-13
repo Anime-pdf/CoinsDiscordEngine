@@ -7,21 +7,25 @@ import me.animepdf.cde.commands.PayCommand
 import me.animepdf.cde.commands.ReloadCommand
 import me.animepdf.cde.commands.RemoveCommand
 import me.animepdf.cde.config.ConfigContainer
+import me.animepdf.cde.config.GeneralConfig
+import me.animepdf.cde.config.LanguageConfig
+import me.animepdf.cde.utils.DiscordLogger
 import org.bukkit.plugin.java.JavaPlugin
 import su.nightexpress.coinsengine.api.CoinsEngineAPI
 
 class CoinsDiscordEngine : JavaPlugin() {
     lateinit var configContainer: ConfigContainer
+    lateinit var discordLogger: DiscordLogger
 
     fun registerCommands() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             val root = Commands.literal("cde")
-            val prefix = Commands.literal(configContainer.generalConfig.prefix)
+            val prefix = Commands.literal(conf().prefix)
 
             val aliases =
-                AddCommand(this).createCommand() +
-                        RemoveCommand(this).createCommand() +
-                        PayCommand(this).createCommand() +
+                AddCommand(this, discordLogger).createCommand() +
+                        RemoveCommand(this, discordLogger).createCommand() +
+                        PayCommand(this, discordLogger).createCommand() +
                         ReloadCommand(this).createCommand()
 
             for (alias in aliases) {
@@ -45,7 +49,9 @@ class CoinsDiscordEngine : JavaPlugin() {
         configContainer = ConfigContainer(dataFolder)
         configContainer.loadConfigs()
 
-        val currency = CoinsEngineAPI.getCurrency(configContainer.generalConfig.currency)
+        discordLogger = DiscordLogger(this)
+
+        val currency = CoinsEngineAPI.getCurrency(conf().currencyId)
         if (currency == null) {
             logger.severe("Can't find specified currency, check config!")
             server.pluginManager.disablePlugin(this)
