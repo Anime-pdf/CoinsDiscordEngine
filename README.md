@@ -66,73 +66,94 @@ The plugin uses its own command system that wraps CoinsEngine functionality to t
 
 ## ⚙️ Configuration
 
-### `config.yml`
+### `config.conf`
 Main plugin settings. Define your channel ID, currency, and command aliases here.
 
 <details>
-<summary>📄 Show config.yml</summary>
+<summary>📄 Show config.conf</summary>
 
-```yaml
+```hocon
 # Prefix for custom commands
-prefix: "mycustomprefix"
+prefix=mycustomprefix
 
 # Whether to enable prefixed commands (e.g. /mycustomprefix pay)
-prefixedCommands: false
+prefixed-commands=false
 
 # Whether to enable non-prefixed commands (e.g. /pay, /add, etc.)
-nonPrefixedCommands: true
+non-prefixed-commands=true
 
 # Currency ID from CoinsEngine (default is 'coins')
-currency: "coins"
+currency-id=coins
 
 # Discord Text Channel ID where logs will be sent (CHANGE THIS!)
-channelId: 000000000000000000
+channel-id=0
 
 # Command aliases
-payAliases:
-  - "pay"
-  - "send"
-addAliases:
-  - "add"
-  - "deposit"
-removeAliases:
-  - "remove"
-  - "withdraw"
+alias {
+  pay=[
+    pay,
+    send
+  ]
+  add=[
+    add,
+    deposit
+  ]
+  remove=[
+    remove,
+    withdraw
+  ]
+}
 
 # Since CoinsEngine 2.6.0 I need to log operations myself, so these are options
-log-pay-to-file: true # 'operations.log' near config file
-log-pay-to-console: false
+log {
+  log-pay-to-file=true # 'operations.log' near config file
+  log-pay-to-console=false
+}
 
 # Toggle notifications for specific actions
-paymentNotification: true   # Player-to-player payments
-addingNotification: true    # Admin giving money
-removingNotification: true  # Admin taking money
-
+notification {
+  pay=true
+  add=true
+  remove=true
+}
 ```
 
 </details>
 
-### `language.yml`
+### `language.conf`
 
 Message configuration. You can use placeholders like `{from}`, `{to}`, `{target}`, `{amount}`, `{reason}`, and `{purpose}`.
 
 <details>
-<summary>📄 Show language.yml (Default English)</summary>
+<summary>📄 Show language.conf (Default English)</summary>
 
-```yaml
-somethingWentWrong: "Something went wrong, transaction cancelled"
+```hocon
+something-went-wrong="Something went wrong, transaction cancelled"
 
 # Player-to-player transaction messages
-transactionMessage: "`{from}` sent `{to}` {amount} coins"
-transactionMessagePurpose: "`{from}` sent `{to}` {amount} coins. Purpose: {purpose}"
+# Placeholders: {from}, {to}, {amount}, {currency}, {purpose}
+transaction-message="`{from}` sent `{to}` {amount} {currency}"
+transaction-message-purpose="`{from}` sent `{to}` {amount} {currency}. Purpose: {purpose}"
 
 # Admin 'add' messages
-addMessage: "`{target}` account was replenished with {amount} coins"
-addMessageReason: "`{target}` account was replenished with {amount} coins. Reason: {reason}"
+# Placeholders: {source}, {target}, {amount}, {currency}, {reason}
+add-message="`{target}` account was replenished with {amount} {currency}"
+add-message-reason="`{target}` account was replenished with {amount} {currency}. Reason: {reason}"
 
 # Admin 'remove' messages
-removeMessage: "{amount} coins were withdrawn from `{target}`'s account"
-removeMessageReason: "`{amount} coins were withdrawn from `{target}`'s account. Reason: {reason}"
+# Placeholders: {source}, {target}, {amount}, {currency}, {reason}
+remove-message="{amount} {currency} were withdrawn from `{target}`'s account"
+remove-message-reason="`{amount} {currency} were withdrawn from `{target}`'s account. Reason: {reason}"
+
+# Currency noun forms (mostly for slavic languge users)
+# ONE: 1
+# FEW: 2-4
+# MANY: 11-14 and everything else
+currency-forms {
+  one=coin
+  few=coins
+  many=coins
+}
 
 ```
 
