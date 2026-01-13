@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
 import org.bukkit.Bukkit
+import me.animepdf.cde.utils.CommandUtils
 import su.nightexpress.coinsengine.api.CoinsEngineAPI
 import su.nightexpress.coinsengine.api.currency.Currency
 import su.nightexpress.coinsengine.config.Perms
@@ -20,32 +21,11 @@ import su.nightexpress.nightcore.core.config.CoreLang
 
 class RemoveCommand(val plugin: CoinsDiscordEngine) {
     fun createCommand(): List<LiteralArgumentBuilder<CommandSourceStack>> {
-        val commands: ArrayList<LiteralArgumentBuilder<CommandSourceStack>> = ArrayList()
-
-        for (alias in plugin.configContainer.generalConfig.removeAliases) {
-            commands.add(
-                Commands.literal(alias)
-                    .requires { it.sender.hasPermission(Perms.COMMAND_CURRENCY_TAKE.name) }
-                    .then(
-                        Commands.argument("player", StringArgumentType.string())
-                            .suggests { ctx, builder ->
-                                for (player in Bukkit.getOnlinePlayers()) {
-                                    builder.suggest(player.name)
-                                }
-                                builder.buildFuture()
-                            }
-                            .then(
-                                Commands.argument("amount", DoubleArgumentType.doubleArg(1.0))
-                                    .executes { execute(it, null) }
-                                    .then(
-                                        Commands.argument("reason", StringArgumentType.greedyString())
-                                            .executes { execute(it, it.getArgument("reason", String::class.java)) })
-                            )
-                    )
-            )
-        }
-
-        return commands
+        return CommandUtils.buildEconomyCommand(
+            aliases = plugin.conf().alias.remove,
+            permission = Perms.COMMAND_CURRENCY_TAKE.name,
+            executor = ::execute
+        )
     }
 
     private fun execute(ctx: CommandContext<CommandSourceStack>, reason: String?): Int {

@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import me.animepdf.cde.CoinsDiscordEngine
 import org.bukkit.Bukkit
+import me.animepdf.cde.utils.CommandUtils
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import su.nightexpress.coinsengine.COEFiles
@@ -33,35 +34,13 @@ class PayCommand(val plugin: CoinsDiscordEngine) {
     fun createCommand(): List<LiteralArgumentBuilder<CommandSourceStack>> {
         val formatter = DateTimeFormatter.ofPattern(Config.LOGS_DATE_FORMAT.get())
         val filePath = Paths.get(plugin.dataFolder.absolutePath, COEFiles.FILE_OPERATIONS)
-        currencyLogger = CurrencyLogger(CoinsEngineAPI.plugin(), formatter, filePath, plugin.configContainer.generalConfig.logPayToConsole, plugin.configContainer.generalConfig.logPayToFile)
+        currencyLogger = CurrencyLogger(CoinsEngineAPI.plugin(), formatter, filePath, plugin.conf().log.logPayToConsole, plugin.conf().log.logPayToFile)
 
-        val commands: ArrayList<LiteralArgumentBuilder<CommandSourceStack>> = ArrayList()
-
-        for (alias in plugin.configContainer.generalConfig.payAliases) {
-            commands.add(
-                Commands.literal(alias)
-                    .then(
-                        Commands.argument("player", StringArgumentType.string())
-                            .suggests { ctx, builder ->
-                                for (player in Bukkit.getOnlinePlayers()) {
-                                    if (player.name == ctx.source.sender.name)
-                                        continue
-                                    builder.suggest(player.name)
-                                }
-                                builder.buildFuture()
-                            }
-                            .then(
-                                Commands.argument("amount", DoubleArgumentType.doubleArg(1.0))
-                                    .executes { execute(it, null) }
-                                    .then(
-                                        Commands.argument("purpose", StringArgumentType.greedyString())
-                                            .executes { execute(it, it.getArgument("purpose", String::class.java)) })
-                            )
-                    )
-            )
-        }
-
-        return commands
+        return CommandUtils.buildEconomyCommand(
+            aliases = plugin.conf().alias.pay,
+            permission = null,
+            executor = ::execute
+        )
     }
 
     private fun assertOperationsEnabled(context: OperationContext): Boolean {
