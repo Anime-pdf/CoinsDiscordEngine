@@ -111,19 +111,19 @@ class ConfigContainer(val dataFolder: File) {
     fun loadConfigs() {
         val generalSerializers = TypeSerializerCollection.builder()
             .build()
-        generalConfig = loadConfiguration(GeneralConfig::class.java, "config.yml", generalSerializers)
+        generalConfig = loadConfiguration(GeneralConfig::class.java, "config.conf", generalSerializers)
 
         val languageSerializers = TypeSerializerCollection.builder()
             .build()
 
         generateLanguageTemplates(languageSerializers)
         languageConfig =
-            loadConfiguration(LanguageConfig::class.java, "language.yml", languageSerializers)
+            loadConfiguration(LanguageConfig::class.java, "language.conf", languageSerializers)
     }
 
     private fun generateLanguageTemplates(serializers: TypeSerializerCollection) {
-        val russianFile = File(dataFolder, "language.russian.yml")
-        val englishFile = File(dataFolder, "language.yml")
+        val russianFile = File(dataFolder, "language.russian.conf")
+        val englishFile = File(dataFolder, "language.conf")
 
         if (!russianFile.exists()) {
             val russianConfig = LanguageConfig.createRussian()
