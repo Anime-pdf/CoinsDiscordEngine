@@ -1,11 +1,10 @@
 plugins {
     kotlin("jvm") version "2.3.0-Beta1"
     id("com.gradleup.shadow") version "8.3.0"
-    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = "me.animepdf"
-version = "1.1.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -39,14 +38,7 @@ dependencies {
     implementation("org.spongepowered:configurate-hocon:4.2.0")
 
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-//    implementation(kotlin("reflect"))
-}
-
-tasks {
-    runServer {
-        minecraftVersion("1.21")
-    }
+    implementation(kotlin("stdlib"))
 }
 
 val targetJavaVersion = 21
